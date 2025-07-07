@@ -1,1 +1,44 @@
+name: Daily TTS Build
 
+on:
+  schedule:
+    # 한국 시간 매일 오전 7시 → UTC 오전 22시
+    - cron: '0 22 * * *'
+  workflow_dispatch:  # 수동 실행 버튼도 추가
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 코드 체크아웃
+      uses: actions/checkout@v4
+
+    - name: Python 설정
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: 의존성 설치
+      run: |
+        pip install --upgrade pip
+        pip install -r requirements.txt
+        # pydub 사용을 위한 ffmpeg 설치
+        sudo apt-get update && sudo apt-get install -y ffmpeg
+
+    - name: GCP 자격 증명 세팅
+      env:
+        GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+      run: |
+        echo "GCP_CREDENTIALS secret is configured."
+
+    - name: TTS 스크립트 실행
+      run: python generate_tts.py
+
+    - name: 변경된 파일 커밋 & 푸시
+      uses: EndBug/add-and-commit@v9
+      with:
+        author_name: github-actions
+        author_email: actions@github.com
+        message: "🤖 Update all_phrases.mp3"
+        add: all_phrases.mp3
