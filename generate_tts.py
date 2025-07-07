@@ -13,7 +13,7 @@ creds = Credentials.from_service_account_info(
 gc = gspread.authorize(creds)
 
 # --- 2) 스프레드시트 열기 ---
-SPREADSHEET_ID = "여기에_시트_ID_입력"
+SPREADSHEET_ID = "12i8_--tyA-WPjLVjzghgNS-6ejZO8URke1bdA4xbYCg"
 sh = gc.open_by_key(SPREADSHEET_ID)
 exprs = sh.worksheet("Expressions").col_values(1)
 diary = sh.worksheet("Diary").col_values(1)
